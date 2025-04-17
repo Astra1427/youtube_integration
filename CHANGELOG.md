@@ -11,3 +11,8 @@ All notable changes to this project will be documented in this file.
 - Search for videos.
 - Fetch video details and comments.
 - Fetch YouTube channel details.
+
+## [1.0.1] - 2025-04-017
+### Fixed
+- Fixed a bug that caused the package to throw an error when fetching comments.
+

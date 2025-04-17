@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:youtube_integration/models/channel_details/channel_details.dart';
-import 'package:youtube_integration/models/playlist/playlist_model.dart';
-import 'package:youtube_integration/models/playlist_video/playlist_video_item.dart';
-import 'package:youtube_integration/models/search_video/search_videos.dart';
-import 'package:youtube_integration/models/video_comments/video_comments_models.dart';
-import 'package:youtube_integration/models/video_details/video_details_model.dart';
+import 'package:youtube_integration/models/channel_details_model/channel_details_model.dart';
+import 'package:youtube_integration/models/channel_playlists_model/channel_playlists_model.dart';
+import 'package:youtube_integration/models/channel_video_model/channel_video_model.dart';
+import 'package:youtube_integration/models/playlist_videos_model/playlist_videos_model.dart';
+import 'package:youtube_integration/models/search_videos_model/search_video_model.dart';
+import 'package:youtube_integration/models/video_comments_model/video_comments_model.dart';
+import 'package:youtube_integration/models/video_details_model/video_details_model.dart';
 import 'package:youtube_integration/src/youtube_exception.dart';
 
+/// The main class that provides access to YouTube Data API services.
 class YouTubeIntegration {
   final String apiKey;
   YouTubeIntegration({required this.apiKey});
@@ -36,8 +38,8 @@ class YouTubeIntegration {
     }
   }
 
-  // Fetch videos from a specific channel
-  Future<List<SearchVideosModel>> fetchChannelVideosByID({
+  /// Fetch videos from a specific channel
+  Future<ChannelVideoModel> fetchChannelVideosByID({
     required String channelId,
     int maxResults = 50,
     String order = 'date',
@@ -49,17 +51,14 @@ class YouTubeIntegration {
       final url =
           '$_baseUrl/search?part=snippet&channelId=$channelId&maxResults=$maxResults&order=$order&type=video&key=$apiKey${pageToken != null ? '&pageToken=$pageToken' : ''}${publishedAfter != null ? '&publishedAfter=$publishedAfter' : ''}${publishedBefore != null ? '&publishedBefore=$publishedBefore' : ''}';
       final response = await _get(url: url);
-      final List items = response['items'];
-      final List<SearchVideosModel> videoItems =
-          items.map((item) => SearchVideosModel.fromJson(item)).toList();
-      return videoItems;
+      return ChannelVideoModel.fromJson(response);
     } catch (e) {
       throw FetchChannelVideosException(e.toString());
     }
   }
 
-  // Fetch playlists from a specific channel
-  Future<List<PlaylistModel>> fetchAllPlaylists({
+  /// Fetch playlists from a specific channel
+  Future<ChannelPlaylistsModel> fetchAllPlaylists({
     required String channelId,
     int maxResults = 50,
     String? pageToken,
@@ -68,17 +67,14 @@ class YouTubeIntegration {
       final url =
           '$_baseUrl/playlists?part=snippet&channelId=$channelId&maxResults=$maxResults&key=$apiKey${pageToken != null ? '&pageToken=$pageToken' : ''}';
       final response = await _get(url: url);
-      final List items = response['items'];
-      final List<PlaylistModel> playlistItems =
-          items.map((item) => PlaylistModel.fromJson(item)).toList();
-      return playlistItems;
+      return ChannelPlaylistsModel.fromJson(response);
     } catch (e) {
       throw FetchPlaylistsException(e.toString());
     }
   }
 
-  // Fetch videos from a specific playlist
-  Future<List<PlaylistVideoModel>> fetchPlaylistVideos({
+  /// Fetch videos from a specific playlist
+  Future<PlaylistVideosModel> fetchPlaylistVideos({
     required String playlistId,
     int maxResults = 50,
     String? pageToken,
@@ -87,34 +83,28 @@ class YouTubeIntegration {
       final url =
           '$_baseUrl/playlistItems?part=snippet&playlistId=$playlistId&maxResults=$maxResults&key=$apiKey${pageToken != null ? '&pageToken=$pageToken' : ''}';
       final response = await _get(url: url);
-      final List items = response['items'];
-      final List<PlaylistVideoModel> playlistItems =
-          items.map((item) => PlaylistVideoModel.fromJson(item)).toList();
-      return playlistItems;
+      return PlaylistVideosModel.fromJson(response);
     } catch (e) {
       throw FetchPlaylistVideosException(e.toString());
     }
   }
 
-  // Fetch video details
-  Future<List<VideoDetailsModel>> fetchVideoDetails({
+  /// Fetch video details
+  Future<VideoDetailsModel> fetchVideoDetails({
     required String videoId,
     String part = 'snippet,statistics',
   }) async {
     try {
       final url = '$_baseUrl/videos?part=$part&id=$videoId&key=$apiKey';
       final response = await _get(url: url);
-      final List items = response['items'];
-      final List<VideoDetailsModel> videoDetails =
-          items.map((item) => VideoDetailsModel.fromJson(item)).toList();
-      return videoDetails;
+      return VideoDetailsModel.fromJson(response);
     } catch (e) {
       throw FetchVideoDetailsException(e.toString());
     }
   }
 
-  // Fetch comments for a specific video
-  Future<List<VideoCommentsModels>> fetchVideoComments({
+  /// Fetch comments for a specific video
+  Future<VideoCommentsModel> fetchVideoComments({
     required String videoId,
     int maxResults = 50,
     String? pageToken,
@@ -123,10 +113,7 @@ class YouTubeIntegration {
       final url =
           '$_baseUrl/commentThreads?part=snippet&videoId=$videoId&maxResults=$maxResults&key=$apiKey${pageToken != null ? '&pageToken=$pageToken' : ''}';
       final response = await _get(url: url);
-      final List items = response['items'];
-      final List<VideoCommentsModels> videoComments =
-          items.map((item) => VideoCommentsModels.fromJson(item)).toList();
-      return videoComments;
+      return VideoCommentsModel.fromJson(response);
     } catch (e) {
       throw FetchVideoCommentsException(e.toString());
     }

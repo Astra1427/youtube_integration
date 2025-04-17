@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the main function from the main library, for the Dart programming language.">
+  <title>main function - main library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">youtube_integration</a></li>
+    <li><a href="../example_main">example\main.dart</a></li>
+    <li class="self-crumb">main function</li>
+  </ol>
+  <div class="self-name">main</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="example_main&#47;example_main-library-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-function">main</span> function 
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+<span class="returntype">void</span>
+<span class="name ">main</span>(<wbr>)
+
+        
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void main() async {
+  &#47;&#47; TODO: Replace with your actual YouTube Data API key
+  const apiKey = &#39;YOUR_API_KEY_HERE&#39;;
+
+  &#47;&#47; Initialize the YouTubeIntegration class
+  final youTube = YouTubeIntegration(apiKey: apiKey);
+
+  try {
+    &#47;&#47; Example 1: Fetch videos from a specific channel
+    final channelVideos = await youTube.fetchChannelVideosByID(
+      channelId: &#39;UC_x5XG1OV2P6uZZ5FSM9Ttw&#39;, &#47;&#47; Google Developers channel ID
+      maxResults: 3,
+    );
+    log(&#39;--- Channel Videos ---&#39;);
+    for (var video in channelVideos.videos ?? []) {
+      log(&#39;Title: ${video.snippet?.title}&#39;);
+    }
+
+    &#47;&#47; Example 2: Fetch playlists from a specific channel
+    final playlists = await youTube.fetchAllPlaylists(
+      channelId: &#39;UC_x5XG1OV2P6uZZ5FSM9Ttw&#39;,
+      maxResults: 2,
+    );
+    log(&#39;\n--- Playlists ---&#39;);
+    for (Playlist playlist in playlists.playlists ?? []) {
+      log(&#39;Playlist: ${playlist.snippet?.title}&#39;);
+    }
+
+    &#47;&#47; Example 3: Fetch videos from a specific playlist
+    if (playlists.playlists?.isNotEmpty ?? false) {
+      final playlistId = playlists.playlists?.first.id ?? &#39;&#39;;
+      final playlistVideos = await youTube.fetchPlaylistVideos(
+        playlistId: playlistId,
+        maxResults: 2,
+      );
+      log(&#39;\n--- Videos from Playlist ---&#39;);
+      for (var video in playlistVideos.videos ?? []) {
+        log(&#39;Video: ${video.snippet?.title}&#39;);
+      }
+    }
+
+    &#47;&#47; Example 4: Fetch details of a specific video
+    if (channelVideos.videos?.isNotEmpty ?? false) {
+      final videoId = channelVideos.videos?.first.id?.videoId ?? &#39;&#39;;
+      final videoDetails = await youTube.fetchVideoDetails(videoId: videoId);
+      log(&#39;\n--- Video Details ---&#39;);
+      for (var detail in videoDetails.items ?? []) {
+        log(&#39;Title: ${detail.snippet?.title}&#39;);
+        log(&#39;Views: ${detail.statistics?.viewCount}&#39;);
+      }
+
+      &#47;&#47; Example 5: Fetch comments for a video
+      final data = await youTube.fetchVideoComments(videoId: videoId);
+      log(&#39;\n--- Video Comments ---&#39;);
+      for (var comment in data.comments ?? []) {
+        log(
+          &#39;Comment: ${comment.snippet?.topLevelComment?.snippet?.textDisplay}&#39;,
+        );
+      }
+    }
+
+    &#47;&#47; Example 6: Search for videos using a keyword
+    final searchResult = await youTube.searchVideos(query: &#39;Flutter&#39;);
+    log(&#39;\n--- Search Result ---&#39;);
+    log(&#39;Searched Video Title: ${searchResult.kind}&#39;);
+
+    &#47;&#47; Example 7: Fetch channel details
+    final channelDetails = await youTube.fetchChannelDetails(
+      channelId: &#39;UC_x5XG1OV2P6uZZ5FSM9Ttw&#39;,
+    );
+    log(&#39;\n--- Channel Details ---&#39;);
+    log(&#39;Title: ${channelDetails.items?.first.snippet?.title}&#39;);
+    log(
+      &#39;Subscribers: ${channelDetails.items?.first.statistics?.subscriberCount}&#39;,
+    );
+  } catch (e) {
+    log(&#39;\n⚠️ Error occurred: $e&#39;);
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">youtube_integration</a></li>
+    <li><a href="../example_main">main</a></li>
+    <li class="self-crumb">main function</li>
+</ol>
+
+    <h5>main library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    youtube_integration
+      1.0.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
