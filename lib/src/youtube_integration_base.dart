@@ -16,13 +16,16 @@ class YouTubeIntegration {
 
   Future<Map<String, dynamic>> _get({
     required String url,
+    List<Interceptor>? interceptors,
   }) async {
-    final response = await Dio(
+    final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
       ),
-    ).get(
+    );
+    if (interceptors != null) dio.interceptors.addAll(interceptors);
+    final response = await dio.get(
       url,
       options: Options(
         headers: {
@@ -124,11 +127,13 @@ class YouTubeIntegration {
     required String query,
     int maxResults = 50,
     String order = 'relevance',
+    String? pageToken,
+    List<Interceptor>? interceptors,
   }) async {
     try {
       final url =
-          '$_baseUrl/search?part=snippet&q=$query&maxResults=$maxResults&order=$order&type=video&key=$apiKey';
-      final response = await _get(url: url);
+          '$_baseUrl/search?part=snippet&q=$query&maxResults=$maxResults&order=$order&type=video&key=$apiKey${pageToken != null ? '&pageToken=$pageToken' : ''}';
+      final response = await _get(url: url, interceptors: interceptors);
       return SearchVideosModel.fromJson(response);
     } catch (e) {
       throw SearchVideosException(e.toString());
